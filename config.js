@@ -10,7 +10,7 @@ window.CONFIG = {
 window.SITE = {
   TELEPHONE: "0541 41 30 42",
   EMAIL: "patisserieallince1@gmail.com",
-  WHATSAPP: "",    // format international sans +, ex. 213XXXXXXXXX
+  WHATSAPP: "213541413042",    // format international sans +, ex. 213XXXXXXXXX
   FACEBOOK: "",    // lien complet de la page
   INSTAGRAM: "",
   TIKTOK: "",

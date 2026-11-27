@@ -5,41 +5,77 @@
   const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } };
   const keep = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
   let lang = read('alliance_langue', 'fr'); if (!TEXTES[lang]) lang = 'fr';
-  let products = null, cat = '', mode = 'emporter', type = 'anniv';
+  let products = null, cat = '', mode = 'ici', type = 'macommande';
   let cart = read('alliance_liste', {});
   const t = k => TEXTES[lang][k];
   const unit = u => ({ 'la pièce': t('piece'), 'le kg': t('kg'), 'la boîte': t('boite'), 'la part': t('part') })[u] || u || '';
   const money = n => n.toLocaleString('fr-FR') + ' DA';
 
-  // Exemples affichés tant qu'aucun produit n'est ajouté depuis le tableau de bord
-  const examples = () => ['coco', 'praline'].map(k => ({ id: 'ex-' + k, nom: t(k), categorie: t('gateaux'), prix: null, disponible: true, photo_url: 'img/' + k + '.jpg' }));
-  const all = () => products === null ? [] : products.length ? products.filter(p => p.visible) : examples();
+  const all = () => (products || []).filter(p => p.visible);
+  const priceOf = p => p.prix != null ? money(Number(p.prix)) + ' ' + unit(p.unite) : t('prixMag');
+  const btn = (cls, text, onclick, label) => { const b = el('button', { type: 'button', className: cls, textContent: text, onclick }); if (label) b.setAttribute('aria-label', label); return b; };
+
+  // Apparition au défilement
+  const watcher = 'IntersectionObserver' in window && new IntersectionObserver(list => list.forEach(x => { if (x.isIntersecting) { x.target.classList.add('in'); watcher.unobserve(x.target); } }), { threshold: .08 });
+  const reveal = e => { if (watcher) { e.classList.add('reveal'); watcher.observe(e); } };
 
   function menu() {
     const list = all(), cats = [...new Set(list.map(p => p.categorie).filter(Boolean))];
     if (!cats.includes(cat)) cat = '';
     $('chips').replaceChildren(...['', ...cats].map(c => {
-      const b = el('button', { type: 'button', textContent: c || t('tout'), onclick: () => { cat = c; menu(); } });
+      const b = btn('', c || t('tout'), () => { cat = c; menu(); });
       b.setAttribute('aria-pressed', c === cat); return b;
     }));
     const q = $('q').value.trim().toLowerCase();
     const shown = list.filter(p => (!cat || p.categorie === cat) && [p.nom, p.categorie, p.description].join(' ').toLowerCase().includes(q));
-    $('grid').replaceChildren(...shown.map(p => {
-      const body = el('div', { className: 'c' }, el('h3', { textContent: p.nom, dir: 'auto' }));
-      if (p.description) body.append(el('p', { textContent: p.description, dir: 'auto' }));
-      if (p.ingredients) body.append(el('p', { textContent: t('ingr') + ' : ' + p.ingredients }));
-      const add = el('button', { type: 'button', className: 'round', textContent: '+', disabled: !p.disponible, onclick: () => qty(p.id, 1) });
-      add.setAttribute('aria-label', t('ajouter') + ' ' + p.nom);
-      const price = !p.disponible ? t('epuise') : p.prix != null ? money(Number(p.prix)) + ' ' + unit(p.unite) : t('prixMag');
-      body.append(el('div', { className: 'buy' }, el('b', { textContent: price }), add));
-      const card = el('article', { className: 'card' + (p.photo_url ? '' : ' nophoto') });
-      if (p.photo_url) card.append(el('img', { src: p.photo_url, alt: p.nom, loading: 'lazy' }));
-      card.append(body); return card;
+    const groups = [...new Set(shown.map(p => p.categorie || ''))];
+    $('grid').replaceChildren(...groups.map(g => {
+      const items = shown.filter(p => (p.categorie || '') === g);
+      const banner = el('div', { className: 'banner' }, el('div', {}, el('h3', { textContent: g || t('carte') })), el('span', { className: 'count', textContent: items.length }));
+      const photo = items.find(p => p.photo_url);
+      if (photo) banner.append(el('img', { src: photo.photo_url, alt: '' }));
+      const rows = el('div', { className: 'rows' }, ...items.map(p => {
+        const open = btn('open', '', () => sheet(p));
+        if (p.photo_url) open.append(el('img', { src: p.photo_url, alt: '', loading: 'lazy' }));
+        const text = el('span', { className: 'txt' }, el('b', { textContent: p.nom, dir: 'auto' }), el('em', { textContent: p.disponible ? priceOf(p) : t('epuise') }));
+        if (p.description) text.append(el('small', { textContent: p.description, dir: 'auto' }));
+        open.append(text);
+        const add = btn('round', '+', ev => { qty(p.id, 1); fly(ev.currentTarget); }, t('ajouter') + ' ' + p.nom);
+        add.disabled = !p.disponible;
+        const row = el('article', { className: 'item' }, open, add); reveal(row); return row;
+      }));
+      reveal(banner);
+      return el('div', {}, banner, rows);
     }));
     $('vide').hidden = products === null || shown.length > 0;
   }
 
-  // Liste de commande
+  // Fiche produit
+  let chosen = null, howMany = 1;
+  function drawSheet() {
+    $('fqte').textContent = howMany;
+    $('fadd').textContent = chosen.disponible ? t('panier') + (chosen.prix != null ? ' · ' + money(chosen.prix * howMany) : '') : t('epuise');
+    $('fadd').disabled = $('fplus').disabled = $('fmoins').disabled = !chosen.disponible;
+  }
+  function sheet(p) {
+    chosen = p; howMany = 1;
+    $('fimg').hidden = !p.photo_url; if (p.photo_url) $('fimg').src = p.photo_url;
+    $('fimg').alt = $('fnom').textContent = p.nom;
+    $('fdesc').textContent = p.description || '';
+    $('fingr').textContent = p.ingredients ? t('ingr') + ' : ' + p.ingredients : '';
+    $('fprix').textContent = priceOf(p);
+    drawSheet(); $('fiche').showModal();
+  }
+  function fly(from) {
+    if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+    const a = from.getBoundingClientRect(), dot = el('span', { className: 'dot' });
+    document.body.append(dot);
+    dot.animate([{ transform: `translate(${a.x}px,${a.y}px) scale(1)` }, { transform: `translate(${innerWidth / 2}px,${innerHeight - 50}px) scale(.4)` }], { duration: 650, easing: 'cubic-bezier(.5,-.3,.7,1)' }).onfinish = () => {
+      dot.remove(); $('cartbar').classList.remove('bump'); void $('cartbar').offsetWidth; $('cartbar').classList.add('bump');
+    };
+  }
+
+  // Panier
   const lines = () => all().filter(p => p.disponible && cart[p.id] > 0).map(p => ({ p, n: cart[p.id] }));
   function qty(id, d) { cart[id] = Math.max(0, Math.min(99, (cart[id] || 0) + d)); if (!cart[id]) delete cart[id]; keep('alliance_liste', cart); basket(); }
   function totalText(l) {
@@ -47,41 +83,64 @@
     const unknown = l.some(x => x.p.prix == null);
     return unknown ? (sum ? money(sum) + ' + ' : '') + t('prixMag') : money(sum);
   }
-  function row(x, edit) {
-    const sub = x.p.prix != null ? money(Number(x.p.prix)) + ' ' + unit(x.p.unite) : t('prixMag');
-    const r = el('div', { className: 'line' }, el('div', {}, el('b', { textContent: (edit ? '' : x.n + ' × ') + x.p.nom }), el('small', { textContent: sub })));
-    if (edit) {
-      const minus = el('button', { type: 'button', className: 'round', textContent: '−', onclick: () => qty(x.p.id, -1) });
-      const plus = el('button', { type: 'button', className: 'round', textContent: '+', onclick: () => qty(x.p.id, 1) });
-      minus.setAttribute('aria-label', t('retirer')); plus.setAttribute('aria-label', t('ajouter'));
-      r.append(minus, el('b', { textContent: x.n }), plus);
-    }
+  const lineTotal = x => x.p.prix != null ? money(x.p.prix * x.n) : t('prixMag');
+  function cartRow(x) {
+    const r = el('div', { className: 'line' });
+    if (x.p.photo_url) r.append(el('img', { src: x.p.photo_url, alt: '' }));
+    const step = el('div', { className: 'stepper' },
+      btn('', x.n === 1 ? '🗑' : '−', () => qty(x.p.id, -1), t('retirer')), el('b', { textContent: x.n }), btn('', '+', () => qty(x.p.id, 1), t('ajouter')));
+    r.append(el('div', {}, el('b', { textContent: x.p.nom }), el('small', { textContent: priceOf(x.p) })), el('div', { className: 'end' }, el('b', { textContent: lineTotal(x) }), step));
     return r;
   }
   function basket() {
     const l = lines(), n = l.reduce((s, x) => s + x.n, 0);
-    $('cartbar').hidden = !n;
-    $('cartbar').replaceChildren(el('span', { textContent: '🛍️ ' + t('commande') + ' (' + n + ')' }), el('span', { textContent: totalText(l) }));
-    $('lines').replaceChildren(...l.map(x => row(x, true)));
+    $('cartbar').hidden = !n; document.body.classList.toggle('hascart', !!n);
+    $('cartbar').replaceChildren(el('span', { className: 'bag' }, '🛍️', el('i', { textContent: n })),
+      el('span', { className: 'mid' }, el('b', { textContent: t('commande') }), el('small', { textContent: t('voirP') })), el('span', { textContent: totalText(l) }));
+    $('lines').replaceChildren(...l.map(cartRow));
     $('total').textContent = totalText(l);
     if (!n && $('cart').open) $('cart').close();
   }
-  function choices(box, keys, active, pick) {
+  function choices(box, keys, active, pick, icons) {
     $(box).replaceChildren(...keys.map(k => {
-      const b = el('button', { type: 'button', textContent: t(k), onclick: () => { pick(k); choices(box, keys, k, pick); } });
+      const b = btn('', (icons ? icons[k] + ' ' : '') + t(k), () => { pick(k); choices(box, keys, k, pick, icons); });
       b.setAttribute('aria-pressed', k === active); return b;
     }));
   }
-  const OCC = { anniv: '🎂', fiancailles: '💍', mariage: '💐', autre: '✨' };
-  const drawModes = () => choices('mode', ['emporter', 'ici'], mode, k => mode = k);
-  const drawTypes = () => choices('types', Object.keys(OCC), type, k => type = k);
+  const OCC = { macommande: '🛍️', anniv: '🎂', fiancailles: '💍', mariage: '💐', autre: '✨' };
+  const drawModes = () => { choices('mode', ['ici', 'emporter'], mode, k => { mode = k; drawModes(); }); $('tablebox').hidden = mode !== 'ici'; $('nombox').classList.toggle('full', mode !== 'ici'); };
 
-  function ticket(title, rows, message) {
-    $('ttitre').textContent = title; $('tlines').replaceChildren(...rows); $('tmsg').textContent = message;
-    const text = [title, ...rows.map(r => r.querySelector('b').textContent), message].filter(Boolean).join('\n');
-    $('wa').hidden = !S.WHATSAPP;
-    if (S.WHATSAPP) $('wa').href = 'https://wa.me/' + S.WHATSAPP + '?text=' + encodeURIComponent('Pâtisserie Alliance\n' + text);
-    $('ticket').showModal();
+  // Réservation envoyée sur WhatsApp
+  let tab = 'formulaire', people = 0;
+  function message() {
+    if (tab === 'libre') return $('rlibre').value.trim();
+    const date = $('rdate').value.split('-').reverse().join('/');
+    const info = [[t('date'), date], [t('heure'), $('rheure').value], [t('personnes'), people || ''], [t('prenom').replace(/ \(.*\)/, ''), $('rnom').value.trim()], [t('details'), $('rdet').value.trim()]];
+    return [t('bonjour'), t('souhaite') + ' : ' + t(type), ...info.filter(x => x[1]).map(x => x[0] + ' : ' + x[1]), t('merci')].join('\n');
+  }
+  function preview() {
+    const m = message();
+    $('rnb').textContent = people || '–'; $('rmsg').textContent = m;
+    if (m) $('rsend').href = 'https://wa.me/' + S.WHATSAPP + '?text=' + encodeURIComponent(m); else $('rsend').removeAttribute('href');
+    $('rsend').setAttribute('aria-disabled', !m);
+  }
+  function drawTabs() {
+    choices('rtabs', ['formulaire', 'libre'], tab, k => { tab = k; drawTabs(); });
+    $('formulaire').hidden = tab !== 'formulaire'; $('libre').hidden = tab !== 'libre'; preview();
+  }
+  const drawTypes = () => choices('types', Object.keys(OCC), type, k => { type = k; preview(); }, OCC);
+  const reserve = k => { if (k) type = k; tab = 'formulaire'; drawTypes(); drawTabs(); $('resa').showModal(); };
+
+  // Écran à montrer au serveur
+  function showTicket() {
+    const l = lines(); if (!l.length) return;
+    const table = mode === 'ici' && $('ctable').value;
+    $('ttitre').textContent = t(mode) + (table ? ' · ' + t('table') + ' ' + table : '');
+    $('tlines').replaceChildren(...l.map(x => el('div', { className: 'tline' }, el('i', { textContent: x.n + '×' }), el('b', { textContent: x.p.nom, dir: 'auto' }), el('span', { textContent: lineTotal(x) }))));
+    $('ttotal').textContent = totalText(l);
+    $('tmsg').textContent = [$('cnom').value.trim(), $('cnote').value.trim()].filter(Boolean).join('\n');
+    $('theure').textContent = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Algiers' });
+    $('cart').close(); $('ticket').showModal();
   }
 
   // Ouvert / fermé, calculé à l'heure d'Algérie
@@ -118,8 +177,12 @@
     document.querySelectorAll('[data-p]').forEach(e => { e.placeholder = t(e.dataset.p); e.setAttribute('aria-label', t(e.dataset.p)); });
     document.querySelectorAll('.x').forEach(e => e.setAttribute('aria-label', t('fermer')));
     [...$('langs').children].forEach(b => b.setAttribute('aria-pressed', b.dataset.l === lang));
-    $('occ').replaceChildren(...Object.keys(OCC).map(k => el('button', { type: 'button', onclick: () => { type = k; drawTypes(); $('resa').showModal(); } }, el('span', { textContent: OCC[k] }), t(k))));
-    drawModes(); drawTypes(); links(); status(); menu(); basket(); sticky();
+    $('occ').replaceChildren(...Object.keys(OCC).filter(k => k !== 'macommande').map(k => el('button', { type: 'button', onclick: () => reserve(k) }, el('span', { textContent: OCC[k] }), t(k))));
+    $('rlibre').placeholder = t('libre'); $('rlibre').setAttribute('aria-label', t('libre'));
+    drawModes(); drawTypes(); drawTabs(); links(); status(); menu(); basket(); sticky();
+    const tel = $('appel').href; $('rcall').href = tel;
+    $('wafloat').hidden = !S.WHATSAPP; $('wafloat').href = 'https://wa.me/' + S.WHATSAPP;
+    document.querySelectorAll('[data-resa]').forEach(b => b.hidden = !S.WHATSAPP);
   }
   const sticky = () => document.documentElement.style.setProperty('--top', document.querySelector('.top').offsetHeight + 'px');
 
@@ -128,20 +191,23 @@
   $('cartbar').onclick = () => $('cart').showModal();
   document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => b.closest('dialog').close());
   $('vider').onclick = () => { cart = {}; keep('alliance_liste', cart); basket(); };
-  $('montrer').onclick = () => {
-    const l = lines(), who = $('cnom').value.trim(), note = $('cnote').value.trim();
-    $('cart').close();
-    ticket(t(mode), l.map(x => row(x, false)), ['Total : ' + totalText(l), who, note].filter(Boolean).join('\n'));
-  };
-  $('rf').onsubmit = e => {
-    e.preventDefault();
-    const info = [[t('date'), $('rdate').value], [t('personnes'), $('rnb').value], [t('prenom'), $('rnom').value.trim()], [t('details'), $('rdet').value.trim()]];
-    $('resa').close();
-    ticket(t(type), [], info.filter(x => x[1]).map(x => x.join(' : ')).join('\n'));
-  };
+  $('montrer').onclick = showTicket;
+  $('retour').onclick = () => { $('ticket').close(); $('cart').showModal(); };
+  $('fplus').onclick = () => { howMany = Math.min(99, howMany + 1); drawSheet(); };
+  $('fmoins').onclick = () => { howMany = Math.max(1, howMany - 1); drawSheet(); };
+  $('fadd').onclick = () => { qty(chosen.id, howMany); fly($('fadd')); $('fiche').close(); };
+  $('rplus').onclick = () => { people = Math.min(2000, people + 1); preview(); };
+  $('rmoins').onclick = () => { people = Math.max(0, people - 1); preview(); };
+  $('resa').addEventListener('input', preview);
+  document.querySelectorAll('[data-resa]').forEach(b => b.onclick = () => reserve());
+  document.querySelectorAll('.w h2, .maison img, #occ, #links').forEach(reveal);
   $('rdate').min = new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Algiers' });
   window.addEventListener('resize', sticky);
   setInterval(status, 60000);
   translate();
-  Store.list().catch(e => { console.error(e); return []; }).then(l => { products = l; menu(); basket(); });
+  // Les changements faits dans le tableau de bord apparaissent sans recharger
+  const refresh = () => Store.list().then(l => { products = l; menu(); basket(); }).catch(e => { console.error(e); if (products === null) { products = []; menu(); } });
+  window.addEventListener('storage', refresh);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+  refresh();
 })();

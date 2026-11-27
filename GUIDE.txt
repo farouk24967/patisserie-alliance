@@ -12,6 +12,7 @@ CONTENU
 1) ESSAYER (sans compte)
   Décompressez le dossier sur un ordinateur et ouvrez admin.html dans Chrome.
   Ajoutez un produit puis cliquez sur "Voir le site".
+  La réservation envoie un message WhatsApp au numéro WHATSAPP de config.js.
   En mode essai, les produits ne sont visibles que dans ce navigateur.
 
 2) METTRE EN LIGNE

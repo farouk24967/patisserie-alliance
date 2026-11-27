@@ -9,43 +9,49 @@
 <div class="top"><div class="bar">
 <a class="logo" href="#accueil">Alliance</a>
 <nav><a href="#carte" data-t="carte"></a><a href="#maison" data-t="maison"></a><a href="#occasions" data-t="occasions"></a><a href="#contact" data-t="trouver"></a></nav>
-<div class="langs" id="langs"><button data-l="fr">FR</button><button data-l="en">EN</button><button data-l="ar">ع</button></div>
+<div class="acts"><div class="langs" id="langs"><button data-l="fr">FR</button><button data-l="en">EN</button><button data-l="ar">ع</button></div><button type="button" class="btn small" data-resa data-t="reserver"></button></div>
 </div></div>
 <div class="awning"></div>
 <header id="accueil" class="w hero">
 <div><h1>Pâtisserie Alliance</h1><p class="sub" data-t="slogan"></p>
 <div class="btns"><a class="btn" href="#carte" data-t="voir"></a><a class="btn o" id="appel" data-t="appeler"></a></div>
 <div class="pills"><span class="pill" id="etat" hidden></span><span class="pill">📍 <span data-t="ville"></span></span><span class="pill">🛍️ <span data-t="surplace"></span></span></div></div>
-<div class="arch"><img src="img/facade.jpg" alt="Façade de la Pâtisserie Alliance"></div>
+<div class="stage"><div class="ring"></div><div class="arch"><img src="img/facade.jpg" alt="Façade de la Pâtisserie Alliance"></div><span class="sweet" aria-hidden="true">🧁</span><span class="sweet" aria-hidden="true">🍓</span><span class="sweet" aria-hidden="true">🍰</span></div>
 </header>
 <section id="carte" class="white"><div class="w"><h2 data-t="carte"></h2><p class="lead" data-t="carteTxt"></p>
 <div class="tools"><div class="chips" id="chips"></div><input class="field" type="search" id="q" data-p="chercher"></div>
-<div class="grid" id="grid"></div><p class="lead" id="vide" data-t="aucun" hidden></p></div></section>
+<div id="grid"></div><p class="lead" id="vide" data-t="aucun" hidden></p></div></section>
 <section id="maison"><div class="w maison"><div><h2 data-t="maison"></h2><p data-t="maisonTxt"></p></div>
 <img src="img/vitrine.jpg" alt="Vitrine de gâteaux"></div></section>
 <section id="occasions" class="pink"><div class="w"><h2 data-t="occTitre"></h2><p class="lead" data-t="occTxt"></p><div class="occ" id="occ"></div></div></section>
 <section id="contact"><div class="w"><h2 data-t="trouver"></h2><div class="links" id="links"></div></div></section>
-<footer dir="ltr">© 2026 Pâtisserie Alliance · Béni-Saf</footer>
+<footer dir="ltr">© 2026 Pâtisserie Alliance · Béni-Saf<br><a href="admin.html">Espace gérant</a></footer>
+<a id="wafloat" target="_blank" rel="noopener" aria-label="WhatsApp" hidden>💬</a>
 <button id="cartbar" hidden></button>
 
-<dialog id="cart"><div class="dh"><h3 data-t="commande"></h3><button class="x" data-close>✕</button></div>
-<div id="lines"></div><div class="choice" id="mode"></div>
-<div class="fields"><label class="full"><span data-t="prenom"></span><input class="field" id="cnom" maxlength="40"></label>
+<dialog id="fiche"><button type="button" class="x over" data-close>✕</button><img id="fimg" alt=""><h3 id="fnom" dir="auto"></h3><p id="fdesc" dir="auto"></p><p class="note" id="fingr"></p><div class="total"><span id="fprix"></span><div class="stepper"><button type="button" id="fmoins">−</button><b id="fqte">1</b><button type="button" id="fplus">+</button></div></div><button type="button" class="btn" id="fadd"></button></dialog>
+
+<dialog id="cart"><div class="dh"><h3 data-t="commande"></h3><button type="button" class="x" data-close>✕</button></div>
+<div id="lines"></div><div class="seg" id="mode"></div>
+<div class="fields"><label id="tablebox"><span data-t="table"></span><input class="field" id="ctable" type="number" min="1" max="999" inputmode="numeric"></label>
+<label id="nombox"><span data-t="prenom"></span><input class="field" id="cnom" maxlength="40"></label>
 <label class="full"><span data-t="remarque"></span><textarea class="field" id="cnote" rows="2" maxlength="250"></textarea></label></div>
-<div class="total"><span>Total</span><span id="total"></span></div><p class="note" data-t="indicatif"></p>
-<button class="btn" id="montrer" data-t="montrer"></button><button class="btn o" id="vider" data-t="vider"></button></dialog>
+<div class="total big"><span>Total</span><span id="total"></span></div><p class="note" data-t="indicatif"></p>
+<button type="button" class="btn" id="montrer" data-t="montrer"></button><button type="button" class="link-btn" id="vider" data-t="vider"></button></dialog>
 
-<dialog id="resa"><form id="rf"><div class="dh"><h3 data-t="occForm"></h3><button type="button" class="x" data-close>✕</button></div>
-<div class="choice" id="types"></div>
+<dialog id="resa"><div class="dh"><h3 data-t="occForm"></h3><button type="button" class="x" data-close>✕</button></div>
+<div class="seg" id="rtabs"></div>
+<div id="formulaire"><div class="choice" id="types"></div>
 <div class="fields"><label><span data-t="date"></span><input class="field" type="date" id="rdate"></label>
-<label><span data-t="personnes"></span><input class="field" type="number" id="rnb" min="1" max="2000"></label>
+<label><span data-t="heure"></span><input class="field" type="time" id="rheure"></label>
+<label class="full"><span data-t="personnes"></span><div class="stepper"><button type="button" id="rmoins">−</button><b id="rnb">–</b><button type="button" id="rplus">+</button></div></label>
 <label class="full"><span data-t="prenom"></span><input class="field" id="rnom" maxlength="40"></label>
-<label class="full"><span data-t="details"></span><textarea class="field" id="rdet" rows="3" maxlength="300"></textarea></label></div>
-<p class="note" data-t="surplace"></p>
-<button class="btn" data-t="preparer"></button></form></dialog>
+<label class="full"><span data-t="details"></span><textarea class="field" id="rdet" rows="2" maxlength="300"></textarea></label></div></div>
+<div id="libre" hidden><textarea class="field" id="rlibre" rows="6" maxlength="600"></textarea></div>
+<div class="preview"><small data-t="apercu"></small><div id="rmsg" dir="auto"></div></div>
+<a class="btn wa" id="rsend" target="_blank" rel="noopener" data-t="whatsapp"></a><a class="btn o" id="rcall" data-t="appeler"></a></dialog>
 
-<dialog id="ticket"><p class="note" data-t="montrezEcran"></p><h3 id="ttitre"></h3><div id="tlines"></div><div id="tmsg"></div>
-<a class="btn" id="wa" target="_blank" rel="noopener" data-t="whatsapp" hidden></a><button class="btn o" data-close data-t="retour"></button></dialog>
+<dialog id="ticket"><div class="paper"><p class="eyebrow" data-t="montrezEcran"></p><img src="img/facade.jpg" alt=""><h3 id="ttitre"></h3><div id="tlines"></div><div class="total big"><span>Total</span><span id="ttotal"></span></div><div id="tmsg" dir="auto"></div><p class="note" id="theure"></p></div><button type="button" class="btn o" id="retour" data-t="retour"></button></dialog>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
 <script src="config.js"></script><script src="store.js"></script><script src="i18n.js"></script><script src="app.js"></script>

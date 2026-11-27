@@ -26,7 +26,9 @@
   }
 
   if (demo) {
-    const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; } };
+    // Produits d'exemple : modifiables et supprimables depuis le tableau de bord
+    const seed = () => [['praline', 'Bouchées aux éclats croquants'], ['coco', 'Boules gourmandes dorées']].map(([k, nom]) => ({ id: 'ex-' + k, nom, categorie: 'Gâteaux', prix: null, unite: 'la pièce', description: '', ingredients: '', disponible: true, visible: true, photo_url: 'img/' + k + '.jpg' }));
+    const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || seed(); } catch (e) { return seed(); } };
     const write = l => { try { localStorage.setItem(KEY, JSON.stringify(l)); } catch (e) { throw new Error('Mémoire du mode essai pleine ou bloquée.'); } };
     const dataUrl = b => new Promise(ok => { const f = new FileReader(); f.onload = () => ok(f.result); f.readAsDataURL(b); });
     window.Store = {
