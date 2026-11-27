@@ -35,7 +35,7 @@ button.s{background:#f1e4ec;color:var(--nuit);padding:8px 14px}button:disabled{o
 <header><h1>Pâtisserie Alliance · Mes produits</h1><div><a href="index.html">Voir le site</a><button class="s" id="out" hidden>Déconnexion</button></div></header>
 <p id="demo" hidden><b>Mode essai :</b> les produits restent sur cet appareil. Les clients ne les voient pas encore.</p>
 <section id="login" class="box" hidden><h2>Connexion</h2>
-<form id="lf"><label>E-mail<input type="email" id="email" autocomplete="username" required></label>
+<form id="lf"><label>Nom d’utilisateur<input type="text" id="email" autocomplete="username" autocapitalize="none" required></label>
 <label>Mot de passe<input type="password" id="pass" autocomplete="current-password" required></label>
 <button>Se connecter</button></form></section>
 <main id="app" hidden>
@@ -132,7 +132,7 @@ $('f').onsubmit=async ev=>{
   try{ await Store.save(p,$('photo').files[0]); reset(); await load(); say('Produit enregistré.'); }
   catch(e){ say(e.message); } finally{ $('ok').disabled=false; }
 };
-$('lf').onsubmit=async ev=>{ ev.preventDefault(); try{ await Store.login($('email').value,$('pass').value); $('pass').value=''; await enter(); }catch(e){ say(e.message); } };
+$('lf').onsubmit=async ev=>{ ev.preventDefault(); try{ await Store.login((v=>v.includes('@')?v:v+'@patisserie-alliance.example.com')($('email').value.trim().toLowerCase()),$('pass').value); $('pass').value=''; await enter(); }catch(e){ say(e.message); } };
 $('out').onclick=async()=>{ await Store.logout(); location.reload(); };
 (async()=>{ $('demo').hidden=!Store.demo; try{ if(await Store.isAdmin()) await enter(); else $('login').hidden=false; }catch(e){ $('login').hidden=false; say(e.message); } })();
 </script></body></html>
