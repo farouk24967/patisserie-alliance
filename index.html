@@ -1,58 +1,138 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pâtisserie Alliance — Béni-Saf</title>
-<meta name="description" content="Pâtisserie Alliance à Béni-Saf, rue Larbi Ben M'hidi. Découvrez la carte.">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,500&family=Nunito:wght@400;700;800&family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-</head><body>
-<div class="top"><div class="bar">
-<a class="logo" href="#accueil">Alliance</a>
-<nav><a href="#carte" data-t="carte"></a><a href="#maison" data-t="maison"></a><a href="#occasions" data-t="occasions"></a><a href="#contact" data-t="trouver"></a></nav>
-<div class="acts"><div class="langs" id="langs"><button data-l="fr">FR</button><button data-l="en">EN</button><button data-l="ar">ع</button></div><button type="button" class="btn small" data-resa data-t="reserver"></button></div>
-</div></div>
-<div class="awning"></div>
-<header id="accueil" class="w hero">
-<div><h1>Pâtisserie Alliance</h1><p class="sub" data-t="slogan"></p>
-<div class="btns"><a class="btn" href="#carte" data-t="voir"></a><a class="btn o" id="appel" data-t="appeler"></a></div>
-<div class="pills"><span class="pill" id="etat" hidden></span><span class="pill">📍 <span data-t="ville"></span></span><span class="pill">🛍️ <span data-t="surplace"></span></span></div></div>
-<div class="stage"><div class="ring"></div><div class="arch"><img src="img/facade.jpg" alt="Façade de la Pâtisserie Alliance"></div><span class="sweet" aria-hidden="true">🧁</span><span class="sweet" aria-hidden="true">🍓</span><span class="sweet" aria-hidden="true">🍰</span></div>
-</header>
-<section id="carte" class="white"><div class="w"><h2 data-t="carte"></h2><p class="lead" data-t="carteTxt"></p>
-<div class="tools"><div class="chips" id="chips"></div><input class="field" type="search" id="q" data-p="chercher"></div>
-<div id="grid"></div><p class="lead" id="vide" data-t="aucun" hidden></p></div></section>
-<section id="maison"><div class="w maison"><div><h2 data-t="maison"></h2><p data-t="maisonTxt"></p></div>
-<img src="img/vitrine.jpg" alt="Vitrine de gâteaux"></div></section>
-<section id="occasions" class="pink"><div class="w"><h2 data-t="occTitre"></h2><p class="lead" data-t="occTxt"></p><div class="occ" id="occ"></div></div></section>
-<section id="contact"><div class="w"><h2 data-t="trouver"></h2><div class="links" id="links"></div></div></section>
-<footer dir="ltr">© 2026 Pâtisserie Alliance · Béni-Saf</footer>
-<a id="wafloat" target="_blank" rel="noopener" aria-label="WhatsApp" hidden>💬</a>
-<button id="cartbar" hidden></button>
-
-<dialog id="fiche"><button type="button" class="x over" data-close>✕</button><img id="fimg" alt=""><h3 id="fnom" dir="auto"></h3><p id="fdesc" dir="auto"></p><p class="note" id="fingr"></p><div class="total"><span id="fprix"></span><div class="stepper"><button type="button" id="fmoins">−</button><b id="fqte">1</b><button type="button" id="fplus">+</button></div></div><button type="button" class="btn" id="fadd"></button></dialog>
-
-<dialog id="cart"><div class="dh"><h3 data-t="commande"></h3><button type="button" class="x" data-close>✕</button></div>
-<div id="lines"></div><div class="seg" id="mode"></div>
-<div class="fields"><label id="tablebox"><span data-t="table"></span><input class="field" id="ctable" type="number" min="1" max="999" inputmode="numeric"></label>
-<label id="nombox"><span data-t="prenom"></span><input class="field" id="cnom" maxlength="40"></label>
-<label class="full"><span data-t="remarque"></span><textarea class="field" id="cnote" rows="2" maxlength="250"></textarea></label></div>
-<div class="total big"><span>Total</span><span id="total"></span></div><p class="note" data-t="indicatif"></p>
-<button type="button" class="btn" id="montrer" data-t="montrer"></button><button type="button" class="link-btn" id="vider" data-t="vider"></button></dialog>
-
-<dialog id="resa"><div class="dh"><h3 data-t="occForm"></h3><button type="button" class="x" data-close>✕</button></div>
-<div class="seg" id="rtabs"></div>
-<div id="formulaire"><div class="choice" id="types"></div>
-<div class="fields"><label><span data-t="date"></span><input class="field" type="date" id="rdate"></label>
-<label><span data-t="heure"></span><input class="field" type="time" id="rheure"></label>
-<label class="full"><span data-t="personnes"></span><div class="stepper"><button type="button" id="rmoins">−</button><b id="rnb">–</b><button type="button" id="rplus">+</button></div></label>
-<label class="full"><span data-t="prenom"></span><input class="field" id="rnom" maxlength="40"></label>
-<label class="full"><span data-t="details"></span><textarea class="field" id="rdet" rows="2" maxlength="300"></textarea></label></div></div>
-<div id="libre" hidden><textarea class="field" id="rlibre" rows="6" maxlength="600"></textarea></div>
-<div class="preview"><small data-t="apercu"></small><div id="rmsg" dir="auto"></div></div>
-<a class="btn wa" id="rsend" target="_blank" rel="noopener" data-t="whatsapp"></a><a class="btn o" id="rcall" data-t="appeler"></a></dialog>
-
-<dialog id="ticket"><div class="paper"><p class="eyebrow" data-t="montrezEcran"></p><img src="img/facade.jpg" alt=""><h3 id="ttitre"></h3><div id="tlines"></div><div class="total big"><span>Total</span><span id="ttotal"></span></div><div id="tmsg" dir="auto"></div><p class="note" id="theure"></p></div><button type="button" class="btn o" id="retour" data-t="retour"></button></dialog>
-
+<meta name="robots" content="noindex">
+<title>Gestion des produits — Alliance</title>
+<style>
+:root{--rose:#b5126f;--nuit:#2b0a1f;--creme:#fff7f1}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:15px/1.5 system-ui,sans-serif;background:var(--creme);color:var(--nuit)}
+[hidden]{display:none!important}
+header{background:var(--nuit);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+header a{color:#fff}header div{display:flex;gap:14px;align-items:center}
+main{max-width:1000px;margin:auto;padding:16px;display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
+.box{background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 18px #2b0a1f14}
+h1{font-size:18px}h2{font-size:18px;color:var(--rose);margin-bottom:10px}
+label{display:block;font-weight:600;font-size:13px;margin-top:12px}
+input,select,textarea{width:100%;font:inherit;padding:10px;border:1px solid #d9c8d2;border-radius:10px;margin-top:4px;background:#fff;color:inherit}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.check{display:flex;gap:8px;align-items:center}.check input{width:auto;margin:0}
+button{font:600 14px system-ui,sans-serif;border:0;border-radius:30px;padding:11px 18px;background:var(--rose);color:#fff;cursor:pointer}
+button.s{background:#f1e4ec;color:var(--nuit);padding:8px 14px}button:disabled{opacity:.5}
+.actions{display:flex;gap:10px;margin-top:16px}
+#preview{max-width:100%;max-height:200px;border-radius:12px;margin-top:10px}
+.item{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #eee;flex-wrap:wrap}
+.item img,.noimg{width:64px;height:64px;border-radius:10px;object-fit:cover;background:#f1e4ec}
+.item .t{flex:1;min-width:150px;overflow-wrap:anywhere}.item small{display:block;color:#755f6d}
+#msg{position:fixed;bottom:16px;left:16px;right:16px;max-width:500px;margin:auto;padding:12px 16px;border-radius:12px;background:var(--nuit);color:#fff;text-align:center}
+#demo{background:#ffe9b8;padding:10px 16px;text-align:center}
+#login{max-width:380px;margin:40px auto}
+#login form button{margin-top:16px;width:100%}
+#catbox{grid-column:1/-1}#cf{display:flex;gap:10px}#cf input{flex:1;min-width:0;margin:0}#cats{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.cat{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:1px solid #e5d3dd;border-radius:14px;padding:8px 12px;overflow-wrap:anywhere}
+@media(max-width:760px){main{grid-template-columns:1fr}}
+</style></head><body>
+<header><h1>Pâtisserie Alliance · Mes produits</h1><div><a href="index.html">Voir le site</a><button class="s" id="out" hidden>Déconnexion</button></div></header>
+<p id="demo" hidden><b>Mode essai :</b> les produits restent sur cet appareil. Les clients ne les voient pas encore.</p>
+<section id="login" class="box" hidden><h2>Connexion</h2>
+<form id="lf"><label>Nom d’utilisateur<input type="text" id="email" autocomplete="username" autocapitalize="none" required></label>
+<label>Mot de passe<input type="password" id="pass" autocomplete="current-password" required></label>
+<button>Se connecter</button></form></section>
+<main id="app" hidden>
+<section class="box" id="catbox"><h2>Catégories</h2>
+<form id="cf"><input id="cnom" required maxlength="40" placeholder="Nouvelle catégorie" aria-label="Nouvelle catégorie"><button>Ajouter</button></form>
+<div id="cats"></div></section>
+<form id="f" class="box"><h2 id="ft">Ajouter un produit</h2>
+<label>Photo<input type="file" id="photo" accept="image/*"></label><img id="preview" alt="Aperçu" hidden>
+<label>Nom du produit *<input id="nom" required maxlength="80"></label>
+<label>Catégorie<select id="categorie"></select></label>
+<div class="row"><label>Prix (DA)<input type="number" id="prix" min="0" step="1" inputmode="numeric"></label>
+<label>Vendu<select id="unite"><option value="la pièce">à la pièce</option><option value="le kg">au kilo</option><option value="la boîte">à la boîte</option><option value="la part">à la part</option></select></label></div>
+<label>Description<textarea id="description" rows="3" maxlength="600"></textarea></label>
+<label>Ingrédients / allergènes<textarea id="ingredients" rows="2" maxlength="400"></textarea></label>
+<label class="check"><input type="checkbox" id="disponible" checked> Disponible</label>
+<label class="check"><input type="checkbox" id="visible" checked> Visible sur le site</label>
+<div class="actions"><button id="ok">Enregistrer</button><button type="button" class="s" id="cancel" hidden>Annuler</button></div></form>
+<section class="box"><h2 id="count">Produits</h2><input id="q" type="search" placeholder="Rechercher un produit" aria-label="Rechercher"><div id="list"></div></section>
+</main>
+<div id="msg" role="status" hidden></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
-<script src="config.js"></script><script src="store.js"></script><script src="i18n.js"></script><script src="app.js"></script>
-</body></html>
+<script src="config.js"></script><script src="store.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const TEXT = ['nom','categorie','unite','description','ingredients'];
+let categories = [], items = [], current = null, timer, blob;
+function say(t){ $('msg').textContent=t; $('msg').hidden=false; clearTimeout(timer); timer=setTimeout(()=>$('msg').hidden=true,5000); }
+function el(tag, props, ...kids){ const e=Object.assign(document.createElement(tag),props); e.append(...kids); return e; }
+function preview(src){ $('preview').hidden=!src; if(src) $('preview').src=src; }
+function reset(){ current=null; $('f').reset(); preview(); $('ft').textContent='Ajouter un produit'; $('cancel').hidden=true; }
+function edit(p){
+  reset(); current=p; TEXT.forEach(k=>{ if(p[k]!=null) $(k).value=p[k]; });
+  $('prix').value=p.prix??''; $('disponible').checked=p.disponible; $('visible').checked=p.visible; preview(p.photo_url);
+  $('ft').textContent='Modifier le produit'; $('cancel').hidden=false; $('f').scrollIntoView({behavior:'smooth'});
+}
+async function del(p){
+  if(!confirm('Supprimer « '+p.nom+' » ?')) return;
+  try{ await Store.remove(p); if(current&&current.id===p.id) reset(); await load(); say('Produit supprimé.'); }catch(e){ say(e.message); }
+}
+function render(){
+  const q=$('q').value.toLowerCase();
+  const shown=items.filter(p=>(p.nom+' '+(p.categorie||'')).toLowerCase().includes(q));
+  $('count').textContent='Produits ('+items.length+')';
+  $('list').replaceChildren(...shown.map(p=>{
+    const info=[p.categorie, p.prix!=null?p.prix+' DA '+p.unite:'', p.disponible?'':'Épuisé', p.visible?'':'Masqué'].filter(Boolean).join(' · ');
+    const b1=el('button',{type:'button',className:'s',textContent:'Modifier'}); b1.onclick=()=>edit(p);
+    const b2=el('button',{type:'button',className:'s',textContent:'Supprimer'}); b2.onclick=()=>del(p);
+    return el('div',{className:'item'}, p.photo_url?el('img',{src:p.photo_url,alt:''}):el('div',{className:'noimg'}),
+      el('div',{className:'t'},el('b',{textContent:p.nom}),el('small',{textContent:info})), b1, b2);
+  }));
+  if(!shown.length) $('list').append(el('p',{textContent:items.length?'Aucun résultat.':'Aucun produit. Ajoutez le premier.'}));
+}
+function drawCats(){
+  const chosen=$('categorie').value;
+  const names=[...new Set([...categories.map(c=>c.nom),...items.map(p=>p.categorie).filter(Boolean)])];
+  $('categorie').replaceChildren(el('option',{value:'',textContent:'Sans catégorie'}),...names.map(n=>el('option',{value:n,textContent:n})));
+  $('categorie').value=names.includes(chosen)?chosen:'';
+  $('cats').replaceChildren(...categories.map(c=>{
+    const n=items.filter(p=>p.categorie===c.nom).length;
+    const b1=el('button',{type:'button',className:'s',textContent:'Renommer'}); b1.onclick=()=>{
+      const nom=(prompt('Nouveau nom de la catégorie',c.nom)||'').trim().slice(0,40);
+      if(nom&&nom!==c.nom) change(async()=>{
+        const selected=$('categorie').value===c.nom;
+        await Store.saveCategory({...c,nom});
+        if(current&&current.categorie===c.nom) current.categorie=nom;
+        await load(); if(selected) $('categorie').value=nom;
+      },'Catégorie renommée.');
+    };
+    const b2=el('button',{type:'button',className:'s',textContent:'Supprimer'}); b2.onclick=()=>{
+      if(confirm('Supprimer la catégorie « '+c.nom+' » ? Ses produits ('+n+') restent visibles sous « Autres ».'))
+        change(async()=>{ await Store.removeCategory(c); if(current&&current.categorie===c.nom) current.categorie=''; await load(); },'Catégorie supprimée.');
+    };
+    return el('div',{className:'cat'},el('b',{textContent:c.nom+' ('+n+')'}),b1,b2);
+  }));
+  if(!categories.length) $('cats').append(el('p',{textContent:'Aucune catégorie.'}));
+}
+async function change(action,done){ try{ await action(); say(done); }catch(e){ say(e.message); } }
+async function load(){ [items,categories]=await Promise.all([Store.list(),Store.categories()]); drawCats(); render(); }
+$('cf').onsubmit=ev=>{
+  ev.preventDefault(); const nom=$('cnom').value.trim(); if(!nom) return;
+  change(async()=>{ await Store.saveCategory({nom}); $('cnom').value=''; await load(); $('categorie').value=nom; },'Catégorie ajoutée.');
+};
+async function enter(){ $('login').hidden=true; $('app').hidden=false; $('out').hidden=Store.demo; await load(); }
+$('photo').onchange=()=>{ if(blob) URL.revokeObjectURL(blob); const f=$('photo').files[0]; blob=f&&URL.createObjectURL(f); preview(blob||current?.photo_url); };
+$('q').oninput=render; $('cancel').onclick=reset;
+$('f').onsubmit=async ev=>{
+  ev.preventDefault();
+  const p=current?{...current}:{};
+  TEXT.forEach(k=>p[k]=$(k).value.trim());
+  if(!p.nom) return say('Indiquez le nom du produit.');
+  p.prix=$('prix').value===''?null:Number($('prix').value);
+  p.disponible=$('disponible').checked; p.visible=$('visible').checked;
+  $('ok').disabled=true; say('Enregistrement…');
+  try{ await Store.save(p,$('photo').files[0]); reset(); await load(); say('Produit enregistré.'); }
+  catch(e){ say(e.message); } finally{ $('ok').disabled=false; }
+};
+$('lf').onsubmit=async ev=>{ ev.preventDefault(); try{ await Store.login((v=>v.includes('@')?v:v+'@patisserie-alliance.example.com')($('email').value.trim().toLowerCase()),$('pass').value); $('pass').value=''; await enter(); }catch(e){ say(e.message); } };
+$('out').onclick=async()=>{ await Store.logout(); location.reload(); };
+(async()=>{ $('demo').hidden=!Store.demo; try{ if(await Store.isAdmin()) await enter(); else $('login').hidden=false; }catch(e){ $('login').hidden=false; say(e.message); } })();
+</script></body></html>
