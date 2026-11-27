@@ -172,6 +172,15 @@
     }));
   }
 
+  // Logos des réseaux sociaux dans le pied de page (seulement ceux qui ont un lien)
+  function socials() {
+    const list = [['Facebook', 'facebook-f', S.FACEBOOK], ['Instagram', 'instagram', S.INSTAGRAM], ['TikTok', 'tiktok', S.TIKTOK], ['WhatsApp', 'whatsapp', S.WHATSAPP && 'https://wa.me/' + S.WHATSAPP]].filter(x => x[2]);
+    $('socials').replaceChildren(...list.map(([name, icon, href]) => {
+      const a = el('a', { href, target: '_blank', rel: 'noopener', title: name }, el('i', { className: 'fa-brands fa-' + icon }));
+      a.setAttribute('aria-label', name); return a;
+    }));
+  }
+
   function translate() {
     document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     document.querySelectorAll('[data-t]').forEach(e => e.textContent = t(e.dataset.t));
@@ -180,7 +189,7 @@
     [...$('langs').children].forEach(b => b.setAttribute('aria-pressed', b.dataset.l === lang));
     $('occ').replaceChildren(...Object.keys(OCC).filter(k => k !== 'macommande').map(k => el('button', { type: 'button', onclick: () => reserve(k) }, el('span', { textContent: OCC[k] }), t(k))));
     $('rlibre').placeholder = t('libre'); $('rlibre').setAttribute('aria-label', t('libre'));
-    drawModes(); drawTypes(); drawTabs(); links(); status(); menu(); basket(); sticky();
+    drawModes(); drawTypes(); drawTabs(); socials(); links(); status(); menu(); basket(); sticky();
     const tel = $('appel').href; $('rcall').href = tel;
     $('wafloat').hidden = !S.WHATSAPP; $('wafloat').href = 'https://wa.me/' + S.WHATSAPP;
     document.querySelectorAll('[data-resa]').forEach(b => b.hidden = !S.WHATSAPP);
