@@ -5,7 +5,7 @@
   const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } };
   const keep = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
   let lang = read('alliance_langue', 'fr'); if (!TEXTES[lang]) lang = 'fr';
-  let products = null, cat = '', mode = 'ici', type = 'macommande';
+  let categories = [], products = null, cat = '', mode = 'ici', type = 'macommande';
   let cart = read('alliance_liste', {});
   const t = k => TEXTES[lang][k];
   const unit = u => ({ 'la pièce': t('piece'), 'le kg': t('kg'), 'la boîte': t('boite'), 'la part': t('part') })[u] || u || '';
@@ -20,7 +20,7 @@
   const reveal = e => { if (watcher) { e.classList.add('reveal'); watcher.observe(e); } };
 
   function menu() {
-    const list = all(), cats = [...new Set(list.map(p => p.categorie).filter(Boolean))];
+    const list = all(), cats = [...new Set([...categories.map(c => c.nom), ...list.map(p => p.categorie).filter(Boolean)])];
     if (!cats.includes(cat)) cat = '';
     $('chips').replaceChildren(...['', ...cats].map(c => {
       const b = btn('', c || t('tout'), () => { cat = c; menu(); });
@@ -28,10 +28,11 @@
     }));
     const q = $('q').value.trim().toLowerCase();
     const shown = list.filter(p => (!cat || p.categorie === cat) && [p.nom, p.categorie, p.description].join(' ').toLowerCase().includes(q));
-    const groups = [...new Set(shown.map(p => p.categorie || ''))];
+    // Toutes les catégories s'affichent, même vides (sauf pendant une recherche)
+    const groups = q ? [...new Set(shown.map(p => p.categorie || ''))] : cat ? [cat] : [...cats, ...(shown.some(p => !p.categorie) ? [''] : [])];
     $('grid').replaceChildren(...groups.map(g => {
       const items = shown.filter(p => (p.categorie || '') === g);
-      const banner = el('div', { className: 'banner' }, el('div', {}, el('h3', { textContent: g || t('carte') })), el('span', { className: 'count', textContent: items.length }));
+      const banner = el('div', { className: 'banner' }, el('div', {}, el('h3', { textContent: g || t('autres') })), el('span', { className: 'count', textContent: items.length }));
       const photo = items.find(p => p.photo_url);
       if (photo) banner.append(el('img', { src: photo.photo_url, alt: '' }));
       const rows = el('div', { className: 'rows' }, ...items.map(p => {
@@ -47,7 +48,7 @@
       reveal(banner);
       return el('div', {}, banner, rows);
     }));
-    $('vide').hidden = products === null || shown.length > 0;
+    $('vide').hidden = products === null || shown.length > 0 || (!q && !cat && groups.length > 0);
   }
 
   // Fiche produit
@@ -206,7 +207,7 @@
   setInterval(status, 60000);
   translate();
   // Les changements faits dans le tableau de bord apparaissent sans recharger
-  const refresh = () => Store.list().then(l => { products = l; menu(); basket(); }).catch(e => { console.error(e); if (products === null) { products = []; menu(); } });
+  const refresh = () => Promise.all([Store.list(), Store.categories().catch(e => { console.error(e); return []; })]).then(([l, c]) => { products = l; categories = c; menu(); basket(); }).catch(e => { console.error(e); if (products === null) { products = []; menu(); } });
   window.addEventListener('storage', refresh);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
   refresh();

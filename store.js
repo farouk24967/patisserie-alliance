@@ -31,8 +31,25 @@
     const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || seed(); } catch (e) { return seed(); } };
     const write = l => { try { localStorage.setItem(KEY, JSON.stringify(l)); } catch (e) { throw new Error('Mémoire du mode essai pleine ou bloquée.'); } };
     const dataUrl = b => new Promise(ok => { const f = new FileReader(); f.onload = () => ok(f.result); f.readAsDataURL(b); });
+    const CK = 'alliance_categories';
+    const readCats = () => {
+      try { const c = JSON.parse(localStorage.getItem(CK)); if (c) return c; } catch (e) {}
+      return [...new Set(read().map(p => p.categorie).filter(Boolean))].map(nom => ({ id: nom, nom }));
+    };
+    const writeCats = l => { try { localStorage.setItem(CK, JSON.stringify(l)); } catch (e) { throw new Error('Mémoire du mode essai pleine ou bloquée.'); } };
+    const moveProducts = (from, to) => write(read().map(p => p.categorie === from ? { ...p, categorie: to } : p));
     window.Store = {
       demo,
+      async categories() { return readCats(); },
+      async saveCategory(c) {
+        const l = readCats();
+        if (l.some(x => x.id !== c.id && x.nom.toLowerCase() === c.nom.toLowerCase())) throw new Error('Cette catégorie existe déjà.');
+        const old = l.find(x => x.id === c.id);
+        // La liste est enregistrée avant de déplacer les produits
+        if (old) { const from = old.nom; old.nom = c.nom; writeCats(l); moveProducts(from, c.nom); }
+        else writeCats([...l, { id: Date.now().toString(36) + Math.random().toString(36).slice(2), nom: c.nom }]);
+      },
+      async removeCategory(c) { writeCats(readCats().filter(x => x.id !== c.id)); moveProducts(c.nom, ''); },
       async list() { return read().reverse(); },
       async save(p, file) {
         const l = read();
@@ -51,7 +68,7 @@
 
   if (!window.supabase) {
     const fail = async () => { throw new Error('Connexion au service impossible. Vérifiez Internet.'); };
-    window.Store = { demo, list: fail, save: fail, remove: fail, isAdmin: fail, login: fail, logout: fail };
+    window.Store = { demo, categories: fail, saveCategory: fail, removeCategory: fail, list: fail, save: fail, remove: fail, isAdmin: fail, login: fail, logout: fail };
     return;
   }
   const db = window.supabase.createClient(c.SUPABASE_URL, c.SUPABASE_KEY);
@@ -59,6 +76,14 @@
   const bucket = () => db.storage.from('produits');
   window.Store = {
     demo,
+    async categories() { return check(await db.from('categories').select('*').order('created_at')); },
+    async saveCategory(c) {
+      const q = c.id ? db.from('categories').update({ nom: c.nom }).eq('id', c.id) : db.from('categories').insert({ nom: c.nom });
+      const r = await q.select();
+      if (r.error && r.error.code === '23505') throw new Error('Cette catégorie existe déjà.');
+      if (!check(r).length) throw new Error('Enregistrement refusé.');
+    },
+    async removeCategory(c) { if (!check(await db.from('categories').delete().eq('id', c.id).select()).length) throw new Error('Suppression refusée.'); },
     async list() { return check(await db.from('produits').select('*').order('created_at', { ascending: false })); },
     async save(p, file) {
       const row = { ...p }; delete row.id; delete row.created_at;
