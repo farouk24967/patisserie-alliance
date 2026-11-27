@@ -2,8 +2,8 @@
 // Tant qu'elles sont vides, le site fonctionne en MODE ESSAI (données sur cet appareil seulement).
 // N'utilisez JAMAIS la clé "secret" ou "service_role".
 window.CONFIG = {
-  SUPABASE_URL: "",
-  SUPABASE_KEY: ""   // clé "publishable" (sb_publishable_...)
+  SUPABASE_URL: "https://bzzugzmxijyqylbzahue.supabase.co",
+  SUPABASE_KEY: "sb_publishable_VYrlTjChHkEkkgDYEpYu3w_wdinftKX"   // clé "publishable" (sb_publishable_...)
 };
 
 // Informations du magasin. Une valeur vide masque l'élément sur le site.
