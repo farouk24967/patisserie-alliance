@@ -1,0 +1,29 @@
+CONTENU
+  index.html    le site vu par les clients
+  admin.html    le tableau de bord (ajouter / modifier / supprimer les produits)
+  config.js     les réglages de connexion
+  store.js      le code commun (ne pas modifier)
+  supabase.sql  la préparation de la base de données
+
+1) ESSAYER (sans compte)
+  Décompressez le dossier sur un ordinateur et ouvrez admin.html dans Chrome.
+  Ajoutez un produit puis cliquez sur "Voir le site".
+  En mode essai, les produits ne sont visibles que dans ce navigateur.
+
+2) METTRE EN LIGNE
+  a. Créez un compte et un projet sur https://supabase.com
+  b. SQL Editor : collez tout le contenu de supabase.sql puis "Run".
+  c. Authentication > Users > Add user : e-mail + mot de passe du gérant
+     (cochez la confirmation automatique). Copiez son "User UID".
+  d. SQL Editor, en remplaçant par ce UID :
+       insert into public.admins (user_id) values ('COLLEZ-LE-UID-ICI');
+  e. Authentication > réglages de connexion : désactivez les nouvelles inscriptions.
+  f. Copiez l'URL du projet et la clé "publishable" (réglages "API Keys")
+     dans config.js. Ne mettez jamais la clé secrète.
+  g. Déposez le dossier sur un hébergeur (ex. https://app.netlify.com/drop).
+  Le tableau de bord est à l'adresse : votre-site/admin.html
+
+A SAVOIR (offre gratuite Supabase)
+  1 Go pour les photos, 500 Mo de base de données, 5 Go de trafic.
+  Le projet est mis en pause après 1 semaine sans activité :
+  il faut alors le réactiver depuis le compte Supabase.
