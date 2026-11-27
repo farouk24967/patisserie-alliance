@@ -3,6 +3,10 @@ CONTENU
   admin.html    le tableau de bord (ajouter / modifier / supprimer les produits)
   config.js     les réglages de connexion
   store.js      le code commun (ne pas modifier)
+  style.css     le design
+  app.js        le fonctionnement du site
+  i18n.js       les textes en français, anglais et arabe
+  img/          les photos du site
   supabase.sql  la préparation de la base de données
 
 1) ESSAYER (sans compte)
@@ -27,3 +31,9 @@ A SAVOIR (offre gratuite Supabase)
   1 Go pour les photos, 500 Mo de base de données, 5 Go de trafic.
   Le projet est mis en pause après 1 semaine sans activité :
   il faut alors le réactiver depuis le compte Supabase.
+
+INFORMATIONS DU MAGASIN (config.js, partie window.SITE)
+  Ajoutez le numéro WhatsApp, les liens Facebook / Instagram / TikTok,
+  le lien des avis Google et les horaires. Une valeur vide reste masquée.
+  Les noms et descriptions des produits s'affichent tels que saisis
+  (ils ne sont pas traduits automatiquement).

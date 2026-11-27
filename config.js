@@ -5,3 +5,16 @@ window.CONFIG = {
   SUPABASE_URL: "",
   SUPABASE_KEY: ""   // clé "publishable" (sb_publishable_...)
 };
+
+// Informations du magasin. Une valeur vide masque l'élément sur le site.
+window.SITE = {
+  TELEPHONE: "0541 41 30 42",
+  EMAIL: "patisserieallince1@gmail.com",
+  WHATSAPP: "",    // format international sans +, ex. 213XXXXXXXXX
+  FACEBOOK: "",    // lien complet de la page
+  INSTAGRAM: "",
+  TIKTOK: "",
+  AVIS_GOOGLE: "", // lien "laisser un avis"
+  // Horaires : 0 = dimanche ... 6 = samedi. Exemple : { 0: [["09:00","12:30"],["14:00","20:00"]], 5: [] }
+  HORAIRES: null
+};
